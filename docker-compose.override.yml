@@ -1,0 +1,16 @@
+services:
+  log-engine:
+    build:
+      target: builder
+    # `command` do compose sempre sobrepõe o CMD da imagem, mesmo
+    # apontando para o stage "builder" (que não define CMD próprio).
+    command: npx tsx watch src/server.ts
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ./src:/app/src
+      - ./package.json:/app/package.json
+      - ./tsconfig.json:/app/tsconfig.json
+      - log-data:/data
+    ports:
+      - "3000:3000"

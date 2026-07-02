@@ -1,0 +1,29 @@
+services:
+  log-engine:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: log-engine:latest
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      DATA_DIR: /data
+      PORT: 3000
+      WORKER_POOL_SIZE: ${WORKER_POOL_SIZE:-}
+      MAX_HEAP_LOGS: ${MAX_HEAP_LOGS:-10000}
+      LRU_CACHE_MAX_ITEMS: ${LRU_CACHE_MAX_ITEMS:-20}
+      FLUSH_INTERVAL_MS: ${FLUSH_INTERVAL_MS:-30000}
+    volumes:
+      - log-data:/data
+    restart: unless-stopped
+    # WORKER_POOL_SIZE e MAX_HEAP_LOGS devem ser dimensionados de acordo
+    # com estes limites (CPU via cgroups e heap do Node), não com os
+    # recursos do host. Descomente e ajuste para produção.
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: "2"
+    #       memory: 512M
+
+volumes:
+  log-data:
